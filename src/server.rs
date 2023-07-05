@@ -151,10 +151,27 @@ where
     }
 
     pub fn run(self) {
-        self.server.run()
+        loop {
+            // We have to use .poll_timeout() here, because rouille's .run()
+            // and .stoppable() take the server by value for some reason.
+            self.server.poll_timeout(std::time::Duration::from_secs(3600));
+        }
     }
 
     pub fn poll(&self) {
         self.server.poll()
+    }
+
+    pub fn poll_timeout(&self, dur : std::time::Duration) {
+        self.server.poll_timeout(dur)
+    }
+}
+
+impl<F> Drop for BoundServer<F>
+where
+    F: Send + Sync + 'static + Fn(&rouille::Request) -> rouille::Response,
+{
+    fn drop(&mut self) {
+        self.server.join();
     }
 }
