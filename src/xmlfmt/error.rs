@@ -2,7 +2,7 @@
 use base64::DecodeError;
 use serde::{de, ser};
 use std::fmt::{self, Debug, Display};
-pub use quick_error::{quick_error, ResultExt};
+pub use quick_error::quick_error;
 
 quick_error! {
     pub enum Error {

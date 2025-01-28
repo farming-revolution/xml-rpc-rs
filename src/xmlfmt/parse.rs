@@ -1,4 +1,4 @@
-use super::error::{Result, ResultExt};
+use super::error::Result;
 use super::{Call, Fault, Response, Value};
 use base64;
 use regex::Regex;

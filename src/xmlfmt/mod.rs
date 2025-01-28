@@ -11,7 +11,7 @@ pub mod value;
 pub use self::value::{Call, Fault, Params, Response, Value};
 
 pub fn from_params<'a, T: Deserialize<'a>>(mut params: Params) -> error::Result<T> {
-    use self::error::ResultExt;
+    
     let data = if params.len() == 1 {
         params.pop().unwrap()
     } else {

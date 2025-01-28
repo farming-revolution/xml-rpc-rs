@@ -16,8 +16,6 @@ extern crate serde_derive;
 pub extern crate rouille;
 extern crate serde_xml_rs;
 extern crate xml;
-
-#[macro_use]
 extern crate quick_error;
 
 pub mod client;
