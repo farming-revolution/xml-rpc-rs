@@ -1,4 +1,4 @@
-use super::error::{Error, ErrorKind};
+use super::error::{Error};
 use super::Value;
 use serde::{self, Serialize};
 use std::collections::HashMap;
@@ -298,7 +298,7 @@ impl serde::ser::SerializeMap for SerializeMap {
             Value::Int(v) => self.next_key = Some(v.to_string()),
             Value::Double(v) => self.next_key = Some(v.to_string()),
             Value::String(s) => self.next_key = Some(s),
-            _ => bail!(ErrorKind::UnsupportedData(
+            _ => return Err(Error::UnsupportedData(
                 "Key must be a bool, int, float, char or string.".into(),
             )),
         };

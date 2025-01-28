@@ -2,7 +2,7 @@ use super::error::{Result, ResultExt};
 use super::{Call, Fault, Response, Value};
 use base64;
 use regex::Regex;
-use serde_xml_rs::deserialize;
+use serde_xml_rs::de;
 use std;
 use std::collections::HashMap;
 
@@ -26,27 +26,27 @@ fn wrap_in_string(content: String) -> String {
 pub fn xml<T: std::io::Read>(mut r: T) -> Result<Value> {
     let mut content = String::new();
     r.read_to_string(&mut content)
-        .chain_err(|| "Failed to read data source.")?;
-    let data: XmlValue = deserialize(std::io::Cursor::new(wrap_in_string(content)))
-        .chain_err(|| "Failed to parse XML-RPC data.")?;
+        ?;//.context(|| "Failed to read data source.")?;
+    let data: XmlValue = de::from_reader(std::io::Cursor::new(wrap_in_string(content)))
+        ?;//.context(|| "Failed to parse XML-RPC data.")?;
     data.into()
 }
 
 pub fn call<T: std::io::Read>(mut r: T) -> Result<Call> {
     let mut content = String::new();
     r.read_to_string(&mut content)
-        .chain_err(|| "Failed to read data source.")?;
-    let data: XmlCall = deserialize(std::io::Cursor::new(wrap_in_string(content)))
-        .chain_err(|| "Failed to parse XML-RPC call.")?;
+        ?;//.context(|| "Failed to read data source.")?;
+    let data: XmlCall = de::from_reader(std::io::Cursor::new(wrap_in_string(content)))
+        ?;//.context(|| "Failed to parse XML-RPC call.")?;
     data.into()
 }
 
 pub fn response<T: std::io::Read>(mut r: T) -> Result<Response> {
     let mut content = String::new();
     r.read_to_string(&mut content)
-        .chain_err(|| "Failed to read data source.")?;
-    let data: XmlResponse = deserialize(std::io::Cursor::new(wrap_in_string(content)))
-        .chain_err(|| "Failed to parse XML-RPC response.")?;
+        ?;//.context(|| "Failed to read data source.")?;
+    let data: XmlResponse = de::from_reader(std::io::Cursor::new(wrap_in_string(content)))
+        ?;//.context(|| "Failed to parse XML-RPC response.")?;
     data.into()
 }
 
@@ -78,10 +78,10 @@ impl Into<Result<Value>> for XmlValue {
             XmlValue::I4(v) | XmlValue::Int(v) => Value::Int(v),
             XmlValue::Bool(v) => Value::Bool(v != 0),
             XmlValue::Str(v) => Value::String(v),
-            XmlValue::Double(v) => Value::Double(v.parse().chain_err(|| "Failed to parse double")?),
+            XmlValue::Double(v) => Value::Double(v.parse()/*.context(|| "Failed to parse double")*/?),
             XmlValue::DateTime(v) => Value::DateTime(v),
             XmlValue::Base64(v) => {
-                Value::Base64(base64::decode(v.as_bytes()).chain_err(|| "Failed to parse base64")?)
+                Value::Base64(base64::decode(v.as_bytes())/*.context(|| "Failed to parse base64")*/?)
             }
             XmlValue::Array(v) => {
                 let items: Result<Vec<Value>> = v.into();
@@ -134,7 +134,7 @@ impl Into<Result<Response>> for XmlResponseResult {
                 let val: Result<Value> = v.into();
 
                 Ok(Err(
-                    Fault::deserialize(val?).chain_err(|| "Failed to decode fault structure")?
+                    Fault::deserialize(val?)?//.context(|| "Failed to decode fault structure")?
                 ))
             }
         }

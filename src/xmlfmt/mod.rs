@@ -18,7 +18,7 @@ pub fn from_params<'a, T: Deserialize<'a>>(mut params: Params) -> error::Result<
         Value::Array(params)
     };
 
-    T::deserialize(data).chain_err(|| "Failed to convert XML-RPC to structure.")
+    T::deserialize(data) //.context(|| "Failed to convert XML-RPC to structure.")
 }
 
 pub fn into_params<T: Serialize>(v: &T) -> error::Result<Params> {

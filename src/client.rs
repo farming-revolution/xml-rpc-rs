@@ -1,4 +1,4 @@
-use super::error::{Result, ResultExt};
+use super::error::Result;
 use super::xmlfmt::{from_params, into_params, parse, Call, Fault, Params, Response};
 use hyper::{self, Client as HyperClient};
 use serde::{Deserialize, Serialize};
@@ -59,8 +59,8 @@ impl Client {
             .post(uri.as_ref())
             .headers(headers)
             .body(body)
-            .send()
-            .chain_err(|| "Failed to run the HTTP request within hyper.")?;
+            .send()?;
+            //.context(|| "Failed to run the HTTP request within hyper.")?;
 
         parse::response(response).map_err(Into::into)
     }
